@@ -1,0 +1,545 @@
+import dash_mantine_components as dmc
+from dash import Dash, html, dcc, callback, Output, Input, State, get_asset_url, no_update, callback_context
+from dash.exceptions import PreventUpdate
+import dash_ag_grid as dag
+from dash_iconify import DashIconify
+import polars as pl
+from polars import col as c
+
+# Local imports
+from helpers import (
+    get_hcpcs_desc_list, get_product_list, filter_payment_info, add_hospital_data,
+    fetch_summarized_prices, schema_for_fig_data, create_map_visualization,
+    create_price_distribution_plot, create_mantine_dictionary, hospitals_data,
+    create_html_table, no_price_table, get_hcpcs_code_from_desc
+)
+from ag_grid_def import columnDefs, defaultColDef, dashGridOptions
+
+# Initialize the app
+app = Dash(__name__)
+server = app.server
+
+class UIComponents:
+    """UI component factory for better organization"""
+    
+    @staticmethod
+    def create_toggle_switch():
+        """Create the HCPCS/NDC toggle switch"""
+        return dmc.Box([
+            dmc.Group([
+                dmc.Switch(id="switch-toggle", checked=True),
+                dmc.Box(id="switch-text"),
+            ])
+        ])
+    
+    @staticmethod
+    def create_dropdown():
+        """Create the product selection dropdown"""
+        return dmc.Box([
+            dmc.Select(
+                id='selection-dropdown',
+                searchable=True,
+                placeholder="Select a product or HCPCS..."
+            )
+        ], className='dropdown-container')
+    
+    @staticmethod
+    def create_control_buttons():
+        """Create control buttons"""
+        return dmc.Stack([
+            dmc.Button("Toggle Price Table", id="price-collapse-btn", n_clicks=0, variant='outline'),
+            dmc.Button("Toggle Data Grid", id="collapse-btn", n_clicks=0, variant='outline'),
+            dmc.Button("Export CSV", id="csv-button", n_clicks=0, variant='outline', color='blue'),
+            dmc.Button("View Schema", id="schema-btn", n_clicks=0, variant='outline', color='green'),
+        ], gap='sm')
+    
+    @staticmethod
+    def create_visualizations():
+        """Create the graphs grid"""
+        return dmc.Grid([
+            dmc.GridCol(
+                dmc.Card([
+                    dcc.Loading(
+                        dcc.Graph(id='map'),
+                        type="circle"
+                    ),
+                ], shadow='sm'),
+                span={'base': 12, 'xl': 6} # type: ignore
+            ),
+            dmc.GridCol(
+                dmc.Card([
+                    dcc.Loading(
+                        dcc.Graph(id='price-distribution'),
+                        type="circle"
+                    ),
+                ], shadow='sm'),
+                span={'base': 12, 'xl': 6} # type: ignore
+            ),
+        ])
+    
+    @staticmethod
+    def create_charts_section():
+        """Create the charts section with professional header"""
+        return dmc.Card([
+            dmc.Text("Chart Analysis", className='section-title'),
+            UIComponents.create_visualizations(),
+        ], shadow='sm')
+    
+    @staticmethod
+    def create_price_section():
+        """Create the pricing information section"""
+        return dmc.Card([
+            dmc.Text("Pricing Information", className='section-title'),
+            dmc.Text(
+                'Click the toggle to expand', 
+                size='sm', 
+                id='hidden-text-price', 
+                className='hidden-text',
+                style={'display': 'none'}
+            ),
+            dmc.Collapse(
+                dmc.Box(id='price-info', className='price-info'),
+                opened=True, 
+                id='price-collapse'
+            )
+        ], className='pricing-container', shadow='sm')
+    
+    @staticmethod
+    def create_data_grid():
+        """Create the data grid section"""
+        return dmc.Card([
+            dmc.Text("Data Grid", className='section-title'),
+            dmc.Text(
+                'Click the toggle to expand',
+                size='sm', 
+                id='hidden-grid-text', 
+                className='hidden-text',
+                style={'display': 'none'}
+            ),
+            dmc.Collapse(
+                dag.AgGrid(
+                    id='grid',
+                    className='ag-theme-alpine',
+                    columnDefs=columnDefs,
+                    defaultColDef=defaultColDef,
+                    dashGridOptions=dashGridOptions,
+                    csvExportParams={"fileName": "hospital_data.csv"},
+                    style={'height': '500px'}
+                ),
+                opened=True, 
+                id='collapse-grid'
+            )
+        ], shadow='sm')
+    
+    @staticmethod
+    def create_navigation():
+        """Create the navigation panel"""
+        return dmc.Stack([
+            dmc.Text('Controls', className='section-title'),
+            UIComponents.create_toggle_switch(),
+            UIComponents.create_dropdown(),
+            UIComponents.create_control_buttons(),
+        ], gap='md')
+    
+    @staticmethod
+    def create_footer():
+        """Create the footer component"""
+        return html.Footer(
+            dmc.Box([
+                dmc.Box([
+                    dmc.Text("Powered By", className='footer-text'),
+                    dmc.Image(src=get_asset_url('3AA-logo-1-stack.jpg'), className='footer-logo'),
+                ], className='footer-left'),
+                
+                dmc.Box([
+                    dmc.Box([
+                        dmc.Text("© 2025 3AxisAdvisors", className='copyright-text'),
+                        dmc.Text("All Rights Reserved", className='rights-text'),
+                    ], className='footer-text-stack'),
+                    
+                    dmc.Box([
+                        dmc.Anchor(
+                            DashIconify(icon='logos:linkedin-icon'),
+                            href="#", className='social-icon', target="_blank"
+                        ),
+                        dmc.Anchor(
+                            DashIconify(icon='logos:facebook'),
+                            href="#", className='social-icon', target="_blank"
+                        ),
+                        dmc.Anchor(
+                            DashIconify(icon='logos:x'),
+                            href="#", className='social-icon', target="_blank"
+                        ),
+                    ], className='social-icons'),
+                ], className='footer-right'),
+            ], className='footer-container')
+        )
+
+
+# Create modals
+schema_modal = dmc.Modal(
+    id="schema-modal",
+    centered=True,
+    size="xl",
+    children=create_mantine_dictionary(),
+    shadow='lg',
+)
+
+hospital_modal = dmc.Modal(
+    id="hospital-info-modal",
+    centered=True,
+    size="lg",
+    children=[],
+    opened=False,
+    shadow='lg',
+)
+
+about_modal = dmc.Modal(
+    id="about-modal",
+    centered=True,
+    size="lg",
+    children=[
+        dmc.Text("About Hospital Price Transparency", className='modal-title'),
+        dmc.Text("This modal provides information about the hospital price transparency initiative.", className='modal-content'),
+    ],
+    opened=False,
+    shadow='lg',
+)
+
+help_modal = dmc.Modal(
+    id="help-modal",
+    centered=True,
+    size="lg",
+    children=[
+        dmc.Text("Help", className='modal-title'),
+        dmc.Text("This modal provides information about how to use the hospital price transparency platform.", className='modal-content'),
+    ],
+    opened=False,
+    shadow='lg',
+)
+
+# Create the main layout
+layout = dmc.AppShell([
+    dmc.AppShellHeader(
+        dmc.Box([
+            dmc.Group([
+                # Left side - Burger and Logo
+                dmc.Group([
+                    dmc.Burger(id="burger", size="sm", hiddenFrom="sm", opened=False, className="header-burger"),
+                    dmc.Anchor(
+                        dmc.Image(src=get_asset_url('pra_logo.png'), h=45, className="header-logo"),
+                        href="https://www.patientrightsadvocate.org/",
+                        target="_blank"
+                    ),
+                ], gap="md"),
+                
+                # Center - Title and Subtitle
+                dmc.Box([
+                    dmc.Title("Hospital Price Transparency", size="h2", className='header-main-title'),
+                    dmc.Text("Data Analysis Platform", className='header-subtitle'),
+                ], className="header-title-section"),
+                
+                # Right side - Action buttons
+                dmc.Group([
+                    dmc.Button(
+                        [DashIconify(icon="material-symbols:info-outline", width=16), "About"],
+                        variant="subtle",
+                        color="gray",
+                        size="sm",
+                        className="header-action-btn",
+                        id='about-btn'
+                    ),
+                    dmc.Button(
+                        [DashIconify(icon="material-symbols:help-outline", width=16), "Help"],
+                        variant="subtle", 
+                        color="gray",
+                        size="sm",
+                        className="header-action-btn",
+                        id='help-btn'
+                    ),
+                ], gap="xs", visibleFrom="md"),
+                
+            ], justify="space-between", align="center", h="100%", px="lg"),        ], className="header-container")
+    ),
+    
+    dmc.AppShellNavbar(
+        id="navbar",
+        children=[UIComponents.create_navigation()],
+        p="md",
+    ),
+    
+    dmc.AppShellMain([
+        dmc.Stack([
+            UIComponents.create_price_section(),
+            UIComponents.create_data_grid(),
+            UIComponents.create_charts_section(),
+        ], gap='md'),        schema_modal,
+        hospital_modal,
+        about_modal,
+        help_modal,
+    ]),
+    
+    dmc.AppShellFooter(UIComponents.create_footer()),
+], **{
+    "header": {"height": 80},
+    "footer": {"height": 60},
+    "padding": "md",
+    "navbar": {
+        "width": 325,
+        "breakpoint": "sm",
+        "collapsed": {"mobile": True},
+    },
+    "id": "appshell",
+})
+
+app.layout = dmc.MantineProvider(layout)
+
+# ============================================================================
+# CALLBACKS
+# ============================================================================
+
+@callback(
+    Output("switch-text", "children"), 
+    Input("switch-toggle", "checked")
+)
+def update_switch_text(checked):
+    """Update the switch description text"""
+    return dmc.Text(f"Search by {'HCPCS' if checked else 'Product'}")
+
+
+@callback(
+    [Output('selection-dropdown', 'data'),
+     Output('selection-dropdown', 'value')],
+    Input('switch-toggle', 'checked')
+)
+def update_dropdown_options(is_hcpcs):
+    """Update dropdown options based on toggle selection"""
+    try:
+        if is_hcpcs:
+            options = get_hcpcs_desc_list()
+        else:
+            options = get_product_list()
+        
+        return options, options[0] if options else None
+    except Exception as e:
+        print(f"Error updating dropdown options: {e}")
+        return [], None
+
+
+@callback(
+    Output("appshell", "navbar"),
+    [Input("burger", "opened")],
+    [State("appshell", "navbar")]
+)
+def toggle_navbar(opened, navbar):
+    """Toggle mobile navbar visibility"""
+    navbar["collapsed"] = {"mobile": not opened}
+    return navbar
+
+
+@callback(
+    [Output('grid', 'rowData'),
+     Output('price-info', 'children')],
+    [Input('selection-dropdown', 'value'),
+     Input('switch-toggle', 'checked')]
+)
+def update_data_and_prices(selected_value, is_hcpcs):
+    """Update grid data and price information"""
+    if not selected_value:
+        return [], no_price_table()
+    
+    try:
+        selection_type = 'hcpcs' if is_hcpcs else 'ndc'
+        
+        # Get filtered data
+        filtered_data = (
+            filter_payment_info(selection_type, selected_value)
+            .pipe(add_hospital_data)
+            .collect()
+            .to_dicts()
+        )
+        
+        # Get price data
+        lookup_value = selected_value
+        if selection_type == 'hcpcs':
+            lookup_value = get_hcpcs_code_from_desc(selected_value)
+        
+        prices = fetch_summarized_prices(how=selection_type, value=lookup_value).collect()
+        
+        if prices.is_empty():
+            prices_html = no_price_table()
+        else:
+            formatted_prices = prices.with_columns(
+                amount=pl.format('${}', c.amount)
+            ).to_dict(as_series=False)
+            prices_html = create_html_table(formatted_prices)
+        
+        return filtered_data, prices_html
+        
+    except Exception as e:
+        print(f"Error updating data: {e}")
+        return [], no_price_table()
+
+
+@callback(
+    [Output('map', 'figure'),
+     Output('price-distribution', 'figure')],
+    Input('grid', 'virtualRowData')
+)
+def update_visualizations(virtual_row_data):
+    """Update map and price distribution charts"""
+    if not virtual_row_data:
+        raise PreventUpdate
+        
+    try:
+        data = pl.DataFrame(
+            virtual_row_data, 
+            schema=schema_for_fig_data(), 
+            strict=False
+        ).lazy()
+        
+        map_fig = create_map_visualization(data)
+        dist_plot = create_price_distribution_plot(data)
+        
+        return map_fig, dist_plot
+        
+    except Exception as e:
+        print(f"Error updating visualizations: {e}")
+        raise PreventUpdate
+
+
+@callback(
+    [Output("price-collapse", "opened"),
+     Output('hidden-text-price', 'style')],
+    Input("price-collapse-btn", "n_clicks")
+)
+def toggle_price_section(n_clicks):
+    """Toggle price section visibility"""
+    if not n_clicks:
+        return True, {'display': 'none'}
+    
+    is_open = n_clicks % 2 == 1
+    text_style = {'display': 'block' if is_open else 'none'}
+    
+    return not is_open, text_style
+
+
+@callback(
+    [Output("collapse-grid", "opened"),
+     Output('hidden-grid-text', 'style')],
+    Input("collapse-btn", "n_clicks")
+)
+def toggle_grid_section(n_clicks):
+    """Toggle grid section visibility"""
+    if not n_clicks:
+        return True, {'display': 'none'}
+    
+    is_open = n_clicks % 2 == 1
+    text_style = {'display': 'block' if is_open else 'none'}
+    
+    return not is_open, text_style
+
+
+@callback(
+    Output("grid", "exportDataAsCsv"),
+    Input("csv-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def export_csv(n_clicks):
+    """Export grid data to CSV"""
+    return True if n_clicks else False
+
+
+@callback(
+    Output("schema-modal", "opened"),
+    Input("schema-btn", "n_clicks"),
+    State("schema-modal", "opened"),
+    prevent_initial_call=True,
+)
+def toggle_schema_modal(n_clicks, opened):
+    """Toggle schema modal visibility"""
+    return not opened
+
+@callback(
+    Output("about-modal", "opened"),
+    Input("about-btn", "n_clicks"),
+    State("about-modal", "opened"),
+    prevent_initial_call=True,
+)
+def toggle_about_modal(n_clicks, opened):
+    """Toggle about modal visibility"""
+    return not opened
+
+@callback(
+    Output("help-modal", "opened"),
+    Input("help-btn", "n_clicks"),
+    State("help-modal", "opened"),
+    prevent_initial_call=True,
+)
+def toggle_help_modal(n_clicks, opened):
+    """Toggle help modal visibility"""
+    return not opened
+
+
+@callback(
+    [Output('hospital-info-modal', 'children'),
+     Output('hospital-info-modal', 'opened')],
+    Input('map', 'clickData'),
+    prevent_initial_call=True,
+)
+
+
+
+def show_hospital_info(click_data):
+    """Display hospital information modal when map point is clicked"""
+    if not click_data:
+        return [], False
+    
+    try:
+        hospital_id = click_data['points'][0]['customdata'][3]
+        hospital_data = (
+            hospitals_data
+            .filter(c.unique_id == hospital_id)
+            .collect()
+            .to_dict(as_series=False)
+        )
+        
+        if not hospital_data['name']:
+            return [], False
+        
+        # Create hospital info card
+        card = dmc.Card([
+            dmc.Stack([
+                dmc.Group([
+                    dmc.Anchor(
+                        dmc.Text(hospital_data['name'][0], className='hospital-title'),
+                        href=hospital_data.get('hospital_url', ['#'])[0],
+                        target="_blank"
+                    ),
+                    dmc.Badge("340B Participant", color="green") if hospital_data.get('is_340b', [False])[0] else None,
+                    dmc.Badge(hospital_data.get('program_type_long'), color="blue") if hospital_data.get('is_340b', [False])[0] else None
+                ], justify="start"),
+                
+                dmc.Divider(),
+                  dmc.SimpleGrid([
+                    dmc.Stack([
+                        dmc.Text("State", size="sm", fw="bold"),
+                        dmc.Text(hospital_data['state'][0])
+                    ]),
+                    dmc.Stack([
+                        dmc.Text("Bed Count", size="sm", fw="bold"),
+                        dmc.Text(str(hospital_data['beds'][0]))
+                    ]),
+                ], cols=2),
+            ])
+        ], shadow="sm", radius="md", p="lg", className='hospital-card')
+        
+        return card, True
+        
+    except Exception as e:
+        print(f"Error displaying hospital info: {e}")
+        return [], False
+
+
+if __name__ == "__main__":
+     app.run()
