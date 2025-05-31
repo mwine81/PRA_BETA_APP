@@ -17,7 +17,7 @@ from ag_grid_def import columnDefs, defaultColDef, dashGridOptions
 
 # Initialize the app
 app = Dash(__name__)
-server = app.server
+
 
 class UIComponents:
     """UI component factory for better organization"""
@@ -47,10 +47,38 @@ class UIComponents:
     def create_control_buttons():
         """Create control buttons"""
         return dmc.Stack([
-            dmc.Button("Toggle Price Table", id="price-collapse-btn", n_clicks=0, variant='outline'),
-            dmc.Button("Toggle Data Grid", id="collapse-btn", n_clicks=0, variant='outline'),
-            dmc.Button("Export CSV", id="csv-button", n_clicks=0, variant='outline', color='blue'),
-            dmc.Button("View Schema", id="schema-btn", n_clicks=0, variant='outline', color='green'),
+            dmc.Button(
+                "Toggle Price Table", 
+                id="price-collapse-btn", 
+                n_clicks=0, 
+                variant='outline',
+                leftSection=DashIconify(icon="mdi:table-eye", width=16),
+                color='blue'
+            ),
+            dmc.Button(
+                "Toggle Data Grid", 
+                id="collapse-btn", 
+                n_clicks=0, 
+                variant='outline',
+                leftSection=DashIconify(icon="mdi:grid", width=16),
+                color='blue'
+            ),
+            dmc.Button(
+                "Export CSV", 
+                id="csv-button", 
+                n_clicks=0, 
+                variant='filled',
+                leftSection=DashIconify(icon="mdi:download", width=16),
+                color='green'
+            ),
+            dmc.Button(
+                "View Schema", 
+                id="schema-btn", 
+                n_clicks=0, 
+                variant='outline',
+                leftSection=DashIconify(icon="mdi:database-eye", width=16),
+                color='violet'
+            ),
         ], gap='sm')
     
     @staticmethod
@@ -59,20 +87,48 @@ class UIComponents:
         return dmc.Grid([
             dmc.GridCol(
                 dmc.Card([
-                    dcc.Loading(
-                        dcc.Graph(id='map'),
-                        type="circle"
-                    ),
-                ], shadow='sm'),
+                    dmc.Stack([
+                        dmc.Group([
+                            #dmc.Text("Hospital Map", fw=500, size="sm"),
+                            dmc.Button(
+                                leftSection=DashIconify(icon="mdi:fullscreen", width=14),
+                                children="Expand", 
+                                id="expand-map-btn", 
+                                n_clicks=0, 
+                                variant='light', 
+                                size='xs',
+                                color='blue'
+                            ),
+                        ], justify="right", align="center"),
+                        dcc.Loading(
+                            dcc.Graph(id='map'),
+                            type="circle"
+                        ),
+                    ], gap=0),
+                ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
             dmc.GridCol(
                 dmc.Card([
-                    dcc.Loading(
-                        dcc.Graph(id='price-distribution'),
-                        type="circle"
-                    ),
-                ], shadow='sm'),
+                    dmc.Stack([
+                        dmc.Group([
+                            #dmc.Text("Price Distribution", fw=500, size="sm"),
+                            dmc.Button(
+                                leftSection=DashIconify(icon="mdi:chart-box-outline", width=14),
+                                children="Expand", 
+                                id="expand-distribution-btn", 
+                                n_clicks=0, 
+                                variant='light', 
+                                size='xs',
+                                color='green'
+                            ),
+                        ], justify="right", align="center"),
+                        dcc.Loading(
+                            dcc.Graph(id='price-distribution'),
+                            type="circle"
+                        ),
+                    ], gap=0),
+                ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
         ])
@@ -194,6 +250,30 @@ hospital_modal = dmc.Modal(
     shadow='lg',
 )
 
+# create modal with map
+map_modal = dmc.Modal(
+    id="map-modal",
+    centered=True,
+    size="75%",
+    children=[
+        dcc.Graph(id='map-modal-graph')
+    ],
+    opened=False,
+    shadow='lg',
+)
+
+# create modal with distribution plot
+distribution_modal = dmc.Modal(
+    id="distribution-modal",
+    centered=True,
+    size="75%",
+    children=[
+        dcc.Graph(id='distribution-modal-graph')
+    ],
+    opened=False,
+    shadow='lg',
+)
+
 about_modal = dmc.Modal(
     id="about-modal",
     centered=True,
@@ -273,15 +353,18 @@ layout = dmc.AppShell([
             UIComponents.create_price_section(),
             UIComponents.create_data_grid(),
             UIComponents.create_charts_section(),
-        ], gap='md'),        schema_modal,
-        hospital_modal,
+        ], gap='md'),
         about_modal,
-        help_modal,
+        help_modal,        
+        schema_modal,
+        hospital_modal,
+        map_modal,
+        distribution_modal,
     ]),
     
     dmc.AppShellFooter(UIComponents.create_footer()),
 ], **{
-    "header": {"height": 80},
+    "header": {"height": 60},
     "footer": {"height": 60},
     "padding": "md",
     "navbar": {
@@ -460,6 +543,84 @@ def toggle_schema_modal(n_clicks, opened):
     """Toggle schema modal visibility"""
     return not opened
 
+##add callback to expand map to full screen
+
+@callback(
+    Output("map-modal", "opened"),
+    Output("map-modal-graph", "figure"),
+    Input("expand-map-btn", "n_clicks"),
+    State("map-modal", "opened"),
+    Input("grid", "virtualRowData"),
+    prevent_initial_call=True,
+)
+def toggle_map_modal(n_clicks, opened, virtual_row_data):
+    """Toggle map modal visibility"""
+    ctx = callback_context
+    if not virtual_row_data:
+        raise PreventUpdate
+
+    # Only toggle modal if the expand button was clicked
+    if ctx.triggered and ctx.triggered[0]["prop_id"].startswith("expand-map-btn"):
+        if not n_clicks:
+            return no_update, no_update
+        data = pl.DataFrame(
+            virtual_row_data,
+            schema=schema_for_fig_data(),
+            strict=False
+        ).lazy()
+        map_fig = create_map_visualization(data)
+        return not opened, map_fig
+    # If triggered by grid data, just update the figure, don't open modal
+    elif ctx.triggered and ctx.triggered[0]["prop_id"].startswith("grid"):
+        data = pl.DataFrame(
+            virtual_row_data,
+            schema=schema_for_fig_data(),
+            strict=False
+        ).lazy()
+        map_fig = create_map_visualization(data)
+        return no_update, map_fig
+    return no_update, no_update
+
+##add callback to expand distribution plot to full screen
+
+@callback(
+    Output("distribution-modal", "opened"),
+    Output("distribution-modal-graph", "figure"),
+    Input("expand-distribution-btn", "n_clicks"),
+    State("distribution-modal", "opened"),
+    Input("grid", "virtualRowData"),
+    prevent_initial_call=True,
+)
+def toggle_distribution_modal(n_clicks, opened, virtual_row_data):
+    """Toggle distribution modal visibility"""
+    ctx = callback_context
+    if not virtual_row_data:
+        raise PreventUpdate
+
+    # Only toggle modal if the expand button was clicked
+    if ctx.triggered and ctx.triggered[0]["prop_id"].startswith("expand-distribution-btn"):
+        if not n_clicks:
+            return no_update, no_update
+        data = pl.DataFrame(
+            virtual_row_data,
+            schema=schema_for_fig_data(),
+            strict=False
+        ).lazy()
+        dist_fig = create_price_distribution_plot(data)
+        return not opened, dist_fig
+    # If triggered by grid data, just update the figure, don't open modal
+    elif ctx.triggered and ctx.triggered[0]["prop_id"].startswith("grid"):
+        data = pl.DataFrame(
+            virtual_row_data,
+            schema=schema_for_fig_data(),
+            strict=False
+        ).lazy()
+        dist_fig = create_price_distribution_plot(data)
+        return no_update, dist_fig
+    return no_update, no_update
+
+
+
 @callback(
     Output("about-modal", "opened"),
     Input("about-btn", "n_clicks"),
@@ -480,16 +641,12 @@ def toggle_help_modal(n_clicks, opened):
     """Toggle help modal visibility"""
     return not opened
 
-
 @callback(
     [Output('hospital-info-modal', 'children'),
      Output('hospital-info-modal', 'opened')],
     Input('map', 'clickData'),
     prevent_initial_call=True,
 )
-
-
-
 def show_hospital_info(click_data):
     """Display hospital information modal when map point is clicked"""
     if not click_data:
@@ -542,4 +699,4 @@ def show_hospital_info(click_data):
 
 
 if __name__ == "__main__":
-     app.run()
+    app.run(debug=True)
