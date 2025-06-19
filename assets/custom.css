@@ -533,3 +533,24 @@ padding: .25rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* Floating expand button for chart cards */
+.expand-fab {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 50%;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+.expand-fab:hover {
+    background: #e3f0ff;
+    box-shadow: 0 4px 16px rgba(0,116,217,0.15);
+}
+
+/* Ensure chart card has enough top padding for button */
+.mantine-Card-root {
+    padding-top: 2.5rem !important;
+}

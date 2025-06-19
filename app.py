@@ -83,51 +83,55 @@ class UIComponents:
     
     @staticmethod
     def create_visualizations():
-        """Create the graphs grid"""
+        """Create the graphs grid with modern floating expand buttons"""
         return dmc.Grid([
             dmc.GridCol(
                 dmc.Card([
-                    dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Hospital Map", fw=500, size="sm"),
-                            dmc.Button(
-                                leftSection=DashIconify(icon="mdi:fullscreen", width=14),
-                                children="Expand", 
-                                id="expand-map-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='blue'
+                    dmc.Box([
+                        dmc.Tooltip(
+                            label="Expand Map",
+                            position="left",
+                            withArrow=True,
+                            children=dmc.ActionIcon(
+                                DashIconify(icon="mdi:fullscreen", width=20),
+                                id="expand-map-btn",
+                                n_clicks=0,
+                                variant="light",
+                                color="blue",
+                                size="lg",
+                                className="expand-fab"
                             ),
-                        ], justify="right", align="center"),
+                        ),
                         dcc.Loading(
                             dcc.Graph(id='map'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], style={"position": "relative"}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
             dmc.GridCol(
                 dmc.Card([
-                    dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Price Distribution", fw=500, size="sm"),
-                            dmc.Button(
-                                leftSection=DashIconify(icon="mdi:chart-box-outline", width=14),
-                                children="Expand", 
-                                id="expand-distribution-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='green'
+                    dmc.Box([
+                        dmc.Tooltip(
+                            label="Expand Distribution",
+                            position="left",
+                            withArrow=True,
+                            children=dmc.ActionIcon(
+                                DashIconify(icon="mdi:fullscreen", width=20),
+                                id="expand-distribution-btn",
+                                n_clicks=0,
+                                variant="light",
+                                color="green",
+                                size="lg",
+                                className="expand-fab"
                             ),
-                        ], justify="right", align="center"),
+                        ),
                         dcc.Loading(
                             dcc.Graph(id='price-distribution'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], style={"position": "relative"}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
