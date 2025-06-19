@@ -1,4 +1,4 @@
-/* Combined and cleaned CSS for app4.py */
+/* Combined and cleaned CSS for PRA Hospital Price Transparency App */
 :root {
     --primary-color: #0074D9;
     --secondary-color: #2c3e50;
@@ -9,6 +9,11 @@
     --shadow: 0 2px 8px rgba(0,0,0,0.1);
     --header-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafe 50%, #ffffff 100%);
     --header-shadow: 0 2px 12px rgba(0, 116, 217, 0.08);
+    --pra-primary: #0074D9;
+    --pra-secondary: #2c5aa0;
+    --pra-accent: #f8fafe;
+    --healthcare-blue: #0074D9;
+    --transparency-light: rgba(0, 116, 217, 0.05);
 }
 
 /* Enhanced Header Styling */
@@ -336,378 +341,195 @@ body {
     border-color: rgba(0, 116, 217, 0.2);
 }
 
-/* Enhanced Switch Styling */
-.mantine-Switch-root {
-    margin: 0.5rem 0;
+/* PRA-specific Healthcare Transparency Styling */
+
+/* Mission-focused card styling */
+.mantine-Card-root {
+    background: linear-gradient(145deg, #ffffff 0%, var(--pra-accent) 100%);
+    border: 1px solid rgba(0, 116, 217, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 116, 217, 0.08);
+    transition: all 0.3s ease;
 }
 
-.mantine-Switch-track {
-    border: 2px solid var(--primary-color) !important;
+.mantine-Card-root:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 116, 217, 0.12);
 }
 
-/* Dropdown Enhancement */
-.mantine-Select-input {
-    border: 2px solid #e9ecef !important;
-    border-radius: 8px !important;
+/* Healthcare-focused button styling */
+.mantine-Button-root[data-variant="filled"] {
+    background: linear-gradient(135deg, var(--pra-primary) 0%, var(--pra-secondary) 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 116, 217, 0.3);
     transition: all 0.2s ease;
-    font-size: 0.95rem;
 }
 
-.mantine-Select-input:focus {
-    border-color: var(--primary-color) !important;
-    box-shadow: 0 0 0 3px rgba(0, 116, 217, 0.1) !important;
+.mantine-Button-root[data-variant="filled"]:hover {
+    background: linear-gradient(135deg, var(--pra-secondary) 0%, var(--pra-primary) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 116, 217, 0.4);
 }
 
-/* Navbar Enhancement */
-.mantine-AppShell-navbar {
-    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-    border-right: 2px solid #e9ecef;
-}
-
-/* Main Content Enhancement */
-.mantine-AppShell-main {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
-}
-
-.controls-title {
-    font-size: 1.5rem;
-    text-align: center;
-    font-weight: 600;
-}
-
-.section-title{
-    font-size: 1.8rem;
-    text-align: center;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: #ffffff;
-    background: linear-gradient(135deg, #0074D9 0%, #2c5aa0 50%, #1e3d72 100%);
-    border-radius: 12px;
-    padding: 1rem 0;
-    box-shadow: 0 4px 15px rgba(0, 116, 217, 0.2), 0 2px 8px rgba(0,0,0,0.1);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.section-title::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
-    border-radius: 12px;
-    pointer-events: none;
-}
-
-/* Data Dictionary Table Styles */
-.dict-container {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
+/* Price transparency emphasis */
+.price-info {
+    background: var(--transparency-light);
+    border-left: 4px solid var(--healthcare-blue);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
     margin: 1rem 0;
-    overflow-x: auto;
 }
 
-.dict-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.dict-header {
-    background-color: var(--primary-color);
+/* 340B hospital badge enhancement */
+.mantine-Badge-root[data-color="green"] {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
-    padding: 12px 16px;
-    text-align: left;
     font-weight: 600;
-    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.dict-cell {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    color: #2c3e50;
+/* Data grid healthcare theming */
+.ag-theme-alpine .ag-header {
+    background: linear-gradient(135deg, var(--pra-accent) 0%, #ffffff 100%);
+    border-bottom: 2px solid var(--healthcare-blue);
 }
 
-.dict-table tbody tr:nth-child(odd) {
-    background-color: #f8f9fa;
+.ag-theme-alpine .ag-row-even {
+    background-color: rgba(0, 116, 217, 0.02);
 }
 
-.dict-table tbody tr:hover {
-    background-color: #f0f4f8;
+.ag-theme-alpine .ag-row-odd {
+    background-color: #ffffff;
 }
 
-.hospital-card{
-    /* add blue border */
-    border: 1px solid var(--primary-color);
+/* Accessibility and healthcare compliance */
+.mantine-Modal-root {
+    --mantine-color-blue-filled: var(--healthcare-blue);
 }
 
-.hospital-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary-color);
+/* Healthcare data visualization enhancements */
+.js-plotly-plot .plotly {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 116, 217, 0.1);
 }
 
-
-.footer-text {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    text-align: center;
-    margin-top: 1rem;
+/* Patient-focused messaging */
+.section-title {
+    color: var(--healthcare-blue);
+    background: linear-gradient(135deg, var(--healthcare-blue) 0%, var(--pra-secondary) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-shadow: none;
 }
 
-/* Footer Styles */
-/* Footer Styles */
-.footer-container {
-    position: relative;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 0.5rem 2rem;
-    border-top: 1px solid var(--border-color);
-    height: 60px;
+/* Loading indicator healthcare theme */
+.mantine-Loader-root {
+    --loader-color: var(--healthcare-blue);
 }
 
-.footer-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    min-width: 200px;
-    height: 100%;
+/* Alert styling for healthcare notices */
+.mantine-Alert-root {
+    border-left: 4px solid var(--healthcare-blue);
+    background: var(--transparency-light);
 }
 
-.footer-text {
-    color: Var(--secondary-color);
-    font-size: 1rem;
-    font-weight:400;
-    white-space: nowrap;
-    margin: 0;
-    /* line-height: 40px; */
-    display: flex;
-    align-items: center;
+/* Enhanced focus states for accessibility */
+.mantine-Button-root:focus-visible,
+.mantine-Select-input:focus-visible,
+.mantine-Switch-input:focus-visible {
+    outline: 3px solid var(--healthcare-blue);
+    outline-offset: 2px;
 }
 
-.footer-logo {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
-    display: flex;
-    align-items: center;
+/* PRA branding for specific elements */
+.header-main-title {
+    background: linear-gradient(135deg, var(--pra-primary) 0%, var(--pra-secondary) 50%, var(--pra-primary) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -1px;
 }
 
-.footer-right {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-left: auto;
+/* Healthcare data table enhancements */
+.mantine-Table-root {
+    border: 1px solid rgba(0, 116, 217, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.footer-text-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-    min-width: 200px;
+.mantine-Table-root thead tr {
+    background: var(--pra-accent);
 }
 
-.copyright-text {
-    color: var(--secondary-color);
-    font-weight: 500;
-    font-size: 1rem;
-    white-space: nowrap;
+.mantine-Table-root tbody tr:hover {
+    background: var(--transparency-light);
 }
 
-.rights-text {
-    color: #666;
-    font-size: 0.875rem;
-    white-space: nowrap;
+/* Navigation enhancement for healthcare context */
+.mantine-AppShell-navbar {
+    background: linear-gradient(180deg, #ffffff 0%, var(--pra-accent) 100%);
+    border-right: 1px solid rgba(0, 116, 217, 0.12);
 }
 
-.social-icons {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    min-width: 80px;
-}
-
-.social-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.social-icon svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* Responsive footer */
+/* Responsive healthcare styling */
 @media (max-width: 768px) {
-    .footer-container {
-        flex-wrap: wrap;
-        height: auto;
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .footer-right {
-        flex-direction: column;
-        width: 100%;
-        gap: 1rem;
-        margin-left: 0;
-    }
-
-    .footer-text-stack {
-        align-items: center;
-        min-width: 100%;
-    }
-
-    .footer-left {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .social-icons {        justify-content: center;
-        min-width: 100%;
-    }
-    
-    /* Mobile-friendly section titles */
     .section-title {
         font-size: 1.4rem;
-        padding: 0.8rem 0.5rem;
-        letter-spacing: 0.5px;
-        margin-bottom: 1rem;
+        background: var(--healthcare-blue);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     
-    /* Mobile hidden text */
-    .hidden-text {
-        font-size: 0.85rem;
-        padding: 0.5rem 0.75rem;
-        margin: 0.25rem 0 0.75rem 0;
-    }
-    
-    .hidden-text::before {
-        font-size: 0.9rem;
-        left: 0.75rem;
-    }
-    
-    /* Mobile card adjustments */
-    .mantine-Card-root {
-        margin-bottom: 1rem;
-    }
-    
-    /* Mobile button adjustments */
-    .mantine-Button-root {
-        width: 100%;
-        margin-bottom: 0.5rem;
+    .price-info {
+        margin: 0.5rem 0;
+        padding: 0.75rem;
     }
 }
 
-/* Tablet adjustments */
-@media (max-width: 1024px) and (min-width: 769px) {
-    .section-title {
-        font-size: 1.6rem;
-        padding: 0.9rem 0;
-    }
-}
-
-/* Accessibility and Focus Improvements */
-*:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-    border-radius: 4px;
-}
-
-/* Professional loading states */
-.mantine-Loader-root {
-    color: var(--primary-color) !important;
-}
-
-/* Enhanced button focus states */
-.mantine-Button-root:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(0, 116, 217, 0.2);
-}
-
-/* AG Grid specific scrollbar styling - neutral colors */
-.ag-theme-alpine ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-.ag-theme-alpine ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.ag-theme-alpine ::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-    opacity: 0.7;
-}
-
-.ag-theme-alpine ::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-    opacity: 1;
-}
-
-/* Professional scrollbar styling for Windows */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-    opacity: 0.7;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-    opacity: 1;
-}
-
-/* Professional selection styling */
-::selection {
-    background-color: rgba(0, 116, 217, 0.2);
-    color: var(--secondary-color);
-}
-
-/* Professional animations */
-@keyframes fadeInUp {
-    from {
+/* Animation for healthcare data loading */
+@keyframes healthcareDataLoad {
+    0% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
-    to {
+    100% {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
 .mantine-Card-root {
-    animation: fadeInUp 0.6s ease-out;
+    animation: healthcareDataLoad 0.6s ease-out;
 }
 
-.section-title {
-    animation: fadeInUp 0.8s ease-out;
+.footer-main{
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: .25rem;
+
+}
+
+
+/* PRA mission statement styling */
+.footer-mission {
+    font-style: italic;
+    color: var(--pra-secondary);
+    opacity: 0.8;
+}
+
+/* Healthcare transparency badge */
+.transparency-badge {
+    background: linear-gradient(135deg, var(--healthcare-blue) 0%, var(--pra-secondary) 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
