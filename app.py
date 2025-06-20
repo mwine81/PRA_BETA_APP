@@ -83,51 +83,55 @@ class UIComponents:
     
     @staticmethod
     def create_visualizations():
-        """Create the graphs grid"""
+        """Create the graphs grid with modern floating expand buttons"""
         return dmc.Grid([
             dmc.GridCol(
                 dmc.Card([
-                    dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Hospital Map", fw=500, size="sm"),
-                            dmc.Button(
-                                leftSection=DashIconify(icon="mdi:fullscreen", width=14),
-                                children="Expand", 
-                                id="expand-map-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='blue'
+                    dmc.Box([
+                        dmc.Tooltip(
+                            label="Expand Map",
+                            position="left",
+                            withArrow=True,
+                            children=dmc.ActionIcon(
+                                DashIconify(icon="mdi:fullscreen", width=20),
+                                id="expand-map-btn",
+                                n_clicks=0,
+                                variant="light",
+                                color="blue",
+                                size="lg",
+                                className="expand-fab"
                             ),
-                        ], justify="right", align="center"),
+                        ),
                         dcc.Loading(
                             dcc.Graph(id='map'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], style={"position": "relative"}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
             dmc.GridCol(
                 dmc.Card([
-                    dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Price Distribution", fw=500, size="sm"),
-                            dmc.Button(
-                                leftSection=DashIconify(icon="mdi:chart-box-outline", width=14),
-                                children="Expand", 
-                                id="expand-distribution-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='green'
+                    dmc.Box([
+                        dmc.Tooltip(
+                            label="Expand Distribution",
+                            position="left",
+                            withArrow=True,
+                            children=dmc.ActionIcon(
+                                DashIconify(icon="mdi:fullscreen", width=20),
+                                id="expand-distribution-btn",
+                                n_clicks=0,
+                                variant="light",
+                                color="green",
+                                size="lg",
+                                className="expand-fab"
                             ),
-                        ], justify="right", align="center"),
+                        ),
                         dcc.Loading(
                             dcc.Graph(id='price-distribution'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], style={"position": "relative"}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
@@ -181,8 +185,7 @@ class UIComponents:
                     dashGridOptions=dashGridOptions,
                     csvExportParams={"fileName": "hospital_data.csv"},
                     style={'height': '500px'}
-                ),
-                opened=True, 
+                ),                opened=True, 
                 id='collapse-grid'
             )
         ], shadow='sm')
@@ -202,32 +205,79 @@ class UIComponents:
         """Create the footer component"""
         return html.Footer(
             dmc.Box([
+                # Main footer content
                 dmc.Box([
-                    dmc.Text("Powered By", className='footer-text'),
-                    dmc.Image(src=get_asset_url('3AA-logo-1-stack.jpg'), className='footer-logo'),
-                ], className='footer-left'),
+                    # Left side - PRA branding
+                    dmc.Box([
+                        dmc.Group([
+                            dmc.Image(src=get_asset_url('pra_logo.png'), h=35, className='footer-logo'),
+                            dmc.Stack([
+                                dmc.Anchor(
+                                    dmc.Text("Patient Rights Advocate", className='footer-org-name', fw="bold"),
+                                    href="https://www.patientrightsadvocate.org/",
+                                    target="_blank",
+                                    className='footer-org-link'
+                                ),
+                                dmc.Text("Empowering Healthcare Transparency", className='footer-mission', size="xs"),
+                            ], gap="xs"),
+                        ], gap="md", align="center"),
+                    ], className='footer-left'),
+                    # Copyright bar
+                dmc.Box([
+                    dmc.Group([
+                        dmc.Text("© 2025 Patient Rights Advocate", className='copyright-text', size="xs"),
+                        dmc.Text("•", className='separator', size="xs"),
+                        dmc.Text("All Rights Reserved", className='rights-text', size="xs"),
+                        dmc.Text("•", className='separator', size="xs"),
+                        dmc.Anchor(
+                            "Privacy Policy",
+                            href="https://www.patientrightsadvocate.org/termsofservice",
+                            target="_blank",
+                            className='footer-link',
+                            size="xs"
+                        ),
+                    ], gap="xs", justify="center"),
+                ], className='footer-copyright', visibleFrom="lg"),
+                    # Right side - Developer and links
+                    dmc.Box([
+                        dmc.Stack([
+                            dmc.Group([
+                                dmc.Text("Developed by", className='footer-dev-label', size="xs"),
+                                dmc.Image(src=get_asset_url('3AA-logo-1-stack.jpg'), h=25, className='footer-dev-logo'),
+                                dmc.Text("3AxisAdvisors", className='footer-dev-name', fw="bold", size="sm"),
+                            ], gap="xs", align="center", justify="center"),
+                            
+                            dmc.Group([
+                                dmc.Anchor(
+                                    DashIconify(icon='logos:linkedin-icon', width=18),
+                                    href="https://www.linkedin.com/company/patient-rights-advocate/",
+                                    className='social-icon', 
+                                    target="_blank"
+                                ),
+                                dmc.Anchor(
+                                    DashIconify(icon='logos:x', width=18),
+                                    href="https://x.com/PtRightsAdvoc",
+                                    className='social-icon', 
+                                    target="_blank"
+                                ),
+                                dmc.Anchor(
+                                    DashIconify(icon='logos:facebook', width=18),
+                                    href="https://www.facebook.com/thepatientrightsadvocate",
+                                    className='social-icon', 
+                                    target="_blank"
+                                ),
+                                dmc.Anchor(
+                                    DashIconify(icon='logos:youtube-icon', width=18),
+                                    href="https://www.youtube.com/channel/UCN7j6idxar-akDLDzVWD46Q",
+                                    className='social-icon', 
+                                    target="_blank"
+                                ),
+                            ], gap="sm", justify="center"),
+                        ], gap="xs", align="center"),
+                    ], className='footer-right', visibleFrom="lg"),
+                ], className='footer-main'),
                 
-                dmc.Box([
-                    dmc.Box([
-                        dmc.Text("© 2025 3AxisAdvisors", className='copyright-text'),
-                        dmc.Text("All Rights Reserved", className='rights-text'),
-                    ], className='footer-text-stack'),
-                    
-                    dmc.Box([
-                        dmc.Anchor(
-                            DashIconify(icon='logos:linkedin-icon'),
-                            href="#", className='social-icon', target="_blank"
-                        ),
-                        dmc.Anchor(
-                            DashIconify(icon='logos:facebook'),
-                            href="#", className='social-icon', target="_blank"
-                        ),
-                        dmc.Anchor(
-                            DashIconify(icon='logos:x'),
-                            href="#", className='social-icon', target="_blank"
-                        ),
-                    ], className='social-icons'),
-                ], className='footer-right'),
+                
             ], className='footer-container')
         )
 
@@ -279,8 +329,52 @@ about_modal = dmc.Modal(
     centered=True,
     size="lg",
     children=[
-        dmc.Text("About Hospital Price Transparency", className='modal-title'),
-        dmc.Text("This modal provides information about the hospital price transparency initiative.", className='modal-content'),
+        dmc.Stack([
+            dmc.Group([
+                dmc.Image(src=get_asset_url('pra_logo.png'), h=50),
+                dmc.Title("About Patient Rights Advocate", size="h3", c="blue"),
+            ], align="center", gap="md"),
+            
+            dmc.Divider(),
+            
+            dmc.Text([
+                "Patient Rights Advocate (PRA) is dedicated to transforming the healthcare system into one that is transparent, competitive, and fair, ultimately lowering prices and improving care quality for all Americans."
+            ], size="md", mb="lg"),
+            
+            dmc.Stack([
+                dmc.Title("Hospital Price Transparency Initiative", size="h4", c="blue"),
+                dmc.Text([
+                    "Since January 1, 2021, hospitals are required by federal law to publish clear, accessible pricing information online. This platform helps analyze and visualize this crucial pricing data to empower patients with the information they need to make informed healthcare decisions."
+                ], size="sm"),
+                
+                dmc.Title("How This Platform Helps", size="h4", c="blue", mt="md"),
+                dmc.List([
+                    dmc.ListItem("Search and compare hospital prices across thousands of facilities"),
+                    dmc.ListItem("View pricing by HCPCS codes or product names"),
+                    dmc.ListItem("Visualize pricing patterns and geographic variations"),
+                    dmc.ListItem("Export data for further analysis"),
+                    dmc.ListItem("Identify 340B participating hospitals"),
+                ], size="sm"),
+                  dmc.Group([
+                    dmc.Anchor([
+                        dmc.Button(
+                            "Visit PRA Website",
+                            leftSection=DashIconify(icon="mdi:external-link", width=16),
+                            variant="filled",
+                            color="blue"
+                        )
+                    ], href="https://www.patientrightsadvocate.org/", target="_blank"),
+                    dmc.Anchor([
+                        dmc.Button(
+                            "Hospital Price Finder",
+                            leftSection=DashIconify(icon="mdi:magnify", width=16),
+                            variant="outline",
+                            color="blue"
+                        )
+                    ], href="https://hospitalpricingfiles.org/", target="_blank"),
+                ], justify="center", mt="lg"),
+            ], gap="sm"),
+        ], gap="md", p="lg"),
     ],
     opened=False,
     shadow='lg',
@@ -291,8 +385,89 @@ help_modal = dmc.Modal(
     centered=True,
     size="lg",
     children=[
-        dmc.Text("Help", className='modal-title'),
-        dmc.Text("This modal provides information about how to use the hospital price transparency platform.", className='modal-content'),
+        dmc.Stack([
+            dmc.Group([
+                DashIconify(icon="mdi:help-circle", width=40, color="green"),
+                dmc.Title("How to Use This Platform", size="h3", c="green"),
+            ], align="center", gap="md"),
+            
+            dmc.Divider(),
+            
+            dmc.Stack([
+                dmc.Title("Getting Started", size="h4", c="green"),                dmc.List([
+                    dmc.ListItem([
+                        dmc.Text("Toggle Search Mode: ", fw="bold", span=True),
+                        "Use the switch to search by HCPCS codes or Product names"
+                    ]),
+                    dmc.ListItem([
+                        dmc.Text("Select a Product: ", fw="bold", span=True),
+                        "Choose from the dropdown menu to filter hospital pricing data"
+                    ]),
+                    dmc.ListItem([
+                        dmc.Text("Explore Data: ", fw="bold", span=True),
+                        "View pricing information, data grid, and interactive charts"
+                    ]),
+                ], size="sm"),
+                
+                dmc.Title("Platform Features", size="h4", c="green", mt="md"),                dmc.Grid([
+                    dmc.GridCol([
+                        dmc.Stack([
+                            dmc.Group([
+                                DashIconify(icon="mdi:table-eye", width=20, color="blue"),
+                                dmc.Text("Price Information", fw="bold", size="sm")
+                            ], gap="xs"),
+                            dmc.Text("View summarized pricing statistics for selected products", size="xs", c="gray"),
+                        ], gap="xs"),
+                    ], span=6),
+                    dmc.GridCol([
+                        dmc.Stack([
+                            dmc.Group([
+                                DashIconify(icon="mdi:grid", width=20, color="blue"),
+                                dmc.Text("Data Grid", fw="bold", size="sm")
+                            ], gap="xs"),
+                            dmc.Text("Browse detailed hospital data with sorting and filtering", size="xs", c="gray"),
+                        ], gap="xs"),
+                    ], span=6),
+                    dmc.GridCol([
+                        dmc.Stack([
+                            dmc.Group([
+                                DashIconify(icon="mdi:map", width=20, color="blue"),
+                                dmc.Text("Interactive Map", fw="bold", size="sm")
+                            ], gap="xs"),
+                            dmc.Text("Visualize hospital locations and pricing geographically", size="xs", c="gray"),
+                        ], gap="xs"),
+                    ], span=6),
+                    dmc.GridCol([
+                        dmc.Stack([
+                            dmc.Group([
+                                DashIconify(icon="mdi:chart-histogram", width=20, color="blue"),
+                                dmc.Text("Price Distribution", fw="bold", size="sm")
+                            ], gap="xs"),
+                            dmc.Text("Analyze pricing patterns and distributions", size="xs", c="gray"),
+                        ], gap="xs"),
+                    ], span=6),
+                ]),
+                
+                dmc.Title("Tips for Success", size="h4", c="green", mt="md"),
+                dmc.List([
+                    dmc.ListItem("Click on map points to view detailed hospital information"),
+                    dmc.ListItem("Use the expand buttons to view charts in full screen"),
+                    dmc.ListItem("Export data to CSV for further analysis"),
+                    dmc.ListItem("Toggle sections on/off to focus on specific data views"),
+                    dmc.ListItem("Look for 340B badges to identify participating hospitals"),
+                ], size="sm"),
+                
+                dmc.Alert(
+                    [
+                        DashIconify(icon="mdi:information", width=16),
+                        dmc.Text("This platform analyzes publicly available hospital pricing data as required by federal transparency rules. Actual costs may vary based on insurance, negotiations, and specific circumstances.", size="sm", ml="xs")
+                    ],
+                    color="blue",
+                    variant="light",
+                    mt="md"
+                ),
+            ], gap="sm"),
+        ], gap="md", p="lg"),
     ],
     opened=False,
     shadow='lg',
@@ -312,11 +487,10 @@ layout = dmc.AppShell([
                         target="_blank"
                     ),
                 ], gap="md"),
-                
-                # Center - Title and Subtitle
+                  # Center - Title and Subtitle
                 dmc.Box([
                     dmc.Title("Hospital Price Transparency", size="h2", className='header-main-title'),
-                    dmc.Text("Data Analysis Platform", className='header-subtitle'),
+                    dmc.Text("Empowering Patients with Clear Healthcare Pricing", className='header-subtitle'),
                 ], className="header-title-section"),
                 
                 # Right side - Action buttons
@@ -365,7 +539,7 @@ layout = dmc.AppShell([
     dmc.AppShellFooter(UIComponents.create_footer()),
 ], **{
     "header": {"height": 60},
-    "footer": {"height": 60},
+    "footer": {"height": 70},
     "padding": "md",
     "navbar": {
         "width": 325,
