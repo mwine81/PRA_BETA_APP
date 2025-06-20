@@ -304,7 +304,7 @@ hospital_modal = dmc.Modal(
 map_modal = dmc.Modal(
     id="map-modal",
     centered=True,
-    size="75%",
+    size="75%", # type: ignore
     children=[
         dcc.Graph(id='map-modal-graph')
     ],
@@ -316,7 +316,7 @@ map_modal = dmc.Modal(
 distribution_modal = dmc.Modal(
     id="distribution-modal",
     centered=True,
-    size="75%",
+    size="75%", # type: ignore
     children=[
         dcc.Graph(id='distribution-modal-graph')
     ],

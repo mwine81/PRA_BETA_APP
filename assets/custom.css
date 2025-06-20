@@ -506,6 +506,7 @@ body {
     animation: healthcareDataLoad 0.6s ease-out;
 }
 
+/* Footer styling */
 .footer-main{
 display: flex;
 justify-content: space-between;
