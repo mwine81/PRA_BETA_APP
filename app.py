@@ -350,9 +350,9 @@ layout = dmc.AppShell([
     
     dmc.AppShellMain([
         dmc.Stack([
-            UIComponents.create_price_section(),
-            UIComponents.create_data_grid(),
             UIComponents.create_charts_section(),
+            UIComponents.create_data_grid(),
+            UIComponents.create_price_section(),
         ], gap='md'),
         about_modal,
         help_modal,        

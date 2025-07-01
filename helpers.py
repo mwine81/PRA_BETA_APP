@@ -241,11 +241,11 @@ def create_price_distribution_plot(df):
 def create_map_visualization(data: pl.LazyFrame):
     """
     Create a geographical visualization of hospital price distribution.
-    
+
     Args:
         data: LazyFrame containing hospital data with required columns:
               hospital_unique_id, standard_charge_negotiated_dollar, lat, long, name, state
-    
+
     Returns:
         plotly.graph_objects.Figure: The configured map visualization
     """
@@ -267,6 +267,10 @@ def create_map_visualization(data: pl.LazyFrame):
         .with_columns(c.marker_size.fill_nan(4.0))  # Fill null sizes with a default value
         .collect()
     )
+    
+    # calculate 5th and 95th percentile for color scale
+    lower_bound = map_data.select(c.standard_charge_negotiated_dollar.quantile(0.05)).item()
+    upper_bound = map_data.select(c.standard_charge_negotiated_dollar.quantile(0.95)).item()
 
     # Create map visualization
     fig = px.scatter_geo(
@@ -279,6 +283,7 @@ def create_map_visualization(data: pl.LazyFrame):
         custom_data=['name', 'state', 'standard_charge_negotiated_dollar', 'hospital_unique_id'],
         title='Hospital Price Distribution Across USA',
         color_continuous_scale='Viridis',
+        range_color=[lower_bound, upper_bound],  # Set color range based on percentiles
         height=500,
     )
 
@@ -289,8 +294,10 @@ def create_map_visualization(data: pl.LazyFrame):
             "State: %{customdata[1]}",
             "Average Price: $%{customdata[2]:,.2f}",
             "<extra></extra>"
-        ])
+        ]),
+
     )
+
 
     # Update layout
     fig.update_layout(
