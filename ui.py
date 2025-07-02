@@ -156,17 +156,38 @@ class UIComponents:
     
     @staticmethod
     def create_charts_section():
-        """Create the charts section with professional header"""
+        """Create the charts section with professional, modern header"""
         return dmc.Card([
-            dmc.Text("Hospital Price Analysis", className='section-title', style={'textAlign': 'center'}),
+            dmc.Text(
+                "Hospital Price Analysis",
+                className='section-title-modern',
+                style={
+                    'textAlign': 'center',
+                    'fontSize': '1.35rem',
+                    'fontWeight': 600,
+                    'letterSpacing': '0.01em',
+                    'marginBottom': '0.5rem',
+                    'color': '#1565c0',
+                }
+            ),
             UIComponents.create_visualizations(),
         ], shadow='sm')
     
     @staticmethod
     def create_price_section():
-        """Create the pricing information section"""
+        """Create the pricing information section with modern header"""
         return dmc.Card([
-            dmc.Text("Price Transparency Data", className='section-title'),
+            dmc.Text(
+                "Price Transparency Data",
+                className='section-title-modern',
+                style={
+                    'fontSize': '1.15rem',
+                    'fontWeight': 500,
+                    'letterSpacing': '0.01em',
+                    'marginBottom': '0.3rem',
+                    'color': '#1565c0',
+                }
+            ),
             dmc.Text(
                 'Click the toggle to expand', 
                 size='sm', 
@@ -183,9 +204,19 @@ class UIComponents:
     
     @staticmethod
     def create_data_grid():
-        """Create the data grid section"""
+        """Create the data grid section with modern header"""
         return dmc.Card([
-            dmc.Text("Hospital Pricing Database", className='section-title'),
+            dmc.Text(
+                "Hospital Pricing Database",
+                className='section-title-modern',
+                style={
+                    'fontSize': '1.15rem',
+                    'fontWeight': 500,
+                    'letterSpacing': '0.01em',
+                    'marginBottom': '0.3rem',
+                    'color': '#1565c0',
+                }
+            ),
             dmc.Text(
                 'Click the toggle to expand',
                 size='sm', 
@@ -210,9 +241,19 @@ class UIComponents:
     
     @staticmethod
     def create_navigation():
-        """Create the navigation panel"""
+        """Create the navigation panel with modern header"""
         return dmc.Stack([
-            dmc.Text('Search & Filter', className='section-title'),
+            dmc.Text(
+                'Search & Filter',
+                className='section-title-modern',
+                style={
+                    'fontSize': '1.05rem',
+                    'fontWeight': 500,
+                    'letterSpacing': '0.01em',
+                    'marginBottom': '0.2rem',
+                    'color': '#1976d2',
+                }
+            ),
             UIComponents.create_toggle_switch(),
             UIComponents.create_dropdown(),
             UIComponents.create_control_buttons(),
