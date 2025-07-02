@@ -318,23 +318,25 @@ about_modal = dmc.Modal(
             ], spacing="xs"),
             dmc.Space(h="md"),
             dmc.Group([
-                dmc.Button(
-                    "Visit PatientRightsAdvocate.org",
-                    leftSection=DashIconify(icon="mdi:open-in-new"),
-                    #component="a",
-                    #href="https://www.patientrightsadvocate.org/",
-                    #target="_blank",
-                    variant="filled",
-                    color="blue"
+                dmc.Anchor(
+                    dmc.Button(
+                        "Visit PatientRightsAdvocate.org",
+                        leftSection=DashIconify(icon="mdi:open-in-new"),
+                        variant="filled",
+                        color="blue"
+                    ),
+                    href="https://www.patientrightsadvocate.org/",
+                    target="_blank"
                 ),
-                dmc.Button(
-                    "Hospital Price Finder",
-                    leftSection=DashIconify(icon="mdi:hospital-building"),
-                    #component="a",
-                    #href="https://hospitalpricingfiles.org/",
-                    #target="_blank",
-                    variant="outline",
-                    color="blue"
+                dmc.Anchor(
+                    dmc.Button(
+                        "Hospital Price Finder",
+                        leftSection=DashIconify(icon="mdi:hospital-building"),
+                        variant="outline",
+                        color="blue"
+                    ),
+                    href="https://hospitalpricingfiles.org/",
+                    target="_blank"
                 ),
             ], justify="center"),
         ], gap="sm"),
@@ -383,23 +385,25 @@ help_modal = dmc.Modal(
                     dmc.AccordionControl("Additional Resources", icon=DashIconify(icon="mdi:link")),
                     dmc.AccordionPanel([
                         dmc.Group([
-                            dmc.Button(
-                                "PRA Price Finder",
-                                leftSection=DashIconify(icon="mdi:magnify"),
-                                #component="a",
-                                #href="https://hospitalpricingfiles.org/",
-                                #target="_blank",
-                                size="sm",
-                                variant="outline"
+                            dmc.Anchor(
+                                dmc.Button(
+                                    "PRA Price Finder",
+                                    leftSection=DashIconify(icon="mdi:magnify"),
+                                    size="sm",
+                                    variant="outline"
+                                ),
+                                href="https://hospitalpricingfiles.org/",
+                                target="_blank"
                             ),
-                            dmc.Button(
-                                "How to Shop for Healthcare",
-                                leftSection=DashIconify(icon="mdi:cart"),
-                                #component="a",
-                                #href="https://www.patientrightsadvocate.org/howtoshop",
-                                #target="_blank",
-                                size="sm",
-                                variant="outline"
+                            dmc.Anchor(
+                                dmc.Button(
+                                    "How to Shop for Healthcare",
+                                    leftSection=DashIconify(icon="mdi:cart"),
+                                    size="sm",
+                                    variant="outline"
+                                ),
+                                href="https://www.patientrightsadvocate.org/howtoshop",
+                                target="_blank"
                             ),
                         ], gap="sm")
                     ]),
