@@ -472,6 +472,14 @@ help_modal = dmc.Modal(
                             dmc.ListItem("340B hospitals participate in a federal drug discount program"),
                             dmc.ListItem("Click on map points to see detailed hospital information"),
                             dmc.ListItem("Use the data grid to sort and filter results"),
+                            dmc.ListItem(
+                                dmc.Anchor(
+                                    "Learn more about our methods",
+                                    href="https://mwine81-pra-methods.share.connect.posit.cloud/",
+                                    target="_blank",
+                                    style={"color": "#1976d2", "textDecoration": "underline"}
+                                )
+                            ),
                         ])
                     ]),
                 ], value="understanding-data"),
