@@ -225,13 +225,21 @@ class UIComponents:
             dmc.Box([
                 dmc.Box([
                     dmc.Text("Empowering Patients Through Price Transparency", className='footer-text', style={'fontStyle': 'italic', 'color': '#0074D9'}),
-                    dmc.Image(src=get_asset_url('pra_logo.png'), className='footer-logo'),
+                    dmc.Anchor(
+                        dmc.Image(src=get_asset_url('pra_logo.png'), className='footer-logo'),
+                        href="https://www.patientrightsadvocate.org/",
+                        target="_blank"
+                    ),
                 ], className='footer-left'),
                 
                 dmc.Box([
                     dmc.Box([
                         dmc.Text("© 2025 Patient Rights Advocate", className='copyright-text'),
-                        dmc.Text("Developed by 3AxisAdvisors", className='rights-text'),
+                        dmc.Anchor(
+                            dmc.Text("Developed by 3AxisAdvisors", className='rights-text'),
+                            href="https://www.3axisadvisors.com/",
+                            target="_blank"
+                        )
                     ], className='footer-text-stack'),
                     
                     dmc.Box([
