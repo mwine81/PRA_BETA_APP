@@ -343,7 +343,7 @@ class UIComponents:
                             href="https://x.com/PtRightsAdvoc", className='social-icon', target="_blank"
                         ),
                     ], className='social-icons'),
-                ], className='footer-right'),
+                ], className='footer-right', visibleFrom='md'),
             ], className='footer-container')
         )
     
