@@ -183,6 +183,7 @@ class UIComponents:
                 style={
                     'fontSize': '1.15rem',
                     'fontWeight': 500,
+                    'textAlign': 'center',
                     'letterSpacing': '0.01em',
                     'marginBottom': '0.3rem',
                     'color': '#1565c0',
@@ -212,6 +213,7 @@ class UIComponents:
                 style={
                     'fontSize': '1.15rem',
                     'fontWeight': 500,
+                    'textAlign': 'center',
                     'letterSpacing': '0.01em',
                     'marginBottom': '0.3rem',
                     'color': '#1565c0',
@@ -241,23 +243,67 @@ class UIComponents:
     
     @staticmethod
     def create_navigation():
-        """Create the navigation panel with modern header"""
-        return dmc.Stack([
-            dmc.Text(
-                'Search & Filter',
-                className='section-title-modern',
-                style={
-                    'fontSize': '1.05rem',
-                    'fontWeight': 500,
-                    'letterSpacing': '0.01em',
-                    'marginBottom': '0.2rem',
-                    'color': '#1976d2',
-                }
-            ),
-            UIComponents.create_toggle_switch(),
-            UIComponents.create_dropdown(),
-            UIComponents.create_control_buttons(),
-        ], gap='md')
+        """Create the navigation panel with Actions section directly under the search dropdown."""
+        return dmc.Card([
+            dmc.Stack([
+                dmc.Text(
+                    'Search & Filter',
+                    className='section-title-modern',
+                    style={
+                        'fontSize': '1.05rem',
+                        'fontWeight': 500,
+                        'letterSpacing': '0.01em',
+                        'marginBottom': '0.2rem',
+                        'color': '#1976d2',
+                    }
+                ),
+                dmc.Divider(mb='xs'),
+                dmc.Group([
+                    UIComponents.create_toggle_switch(),
+                    dmc.Tooltip(
+                        label="Switch between HCPCS and NDC codes",
+                        children=DashIconify(icon="mdi:help-circle-outline", width=18, color="#1976d2"),
+                        position="right",
+                        withArrow=True,
+                        offset=4
+                    )
+                ], gap='xs', align='center'),
+                dmc.Space(h=2),
+                dmc.Box(
+                    UIComponents.create_dropdown(),
+                    style={
+                        'flexGrow': 0,
+                        'display': 'flex',
+                        'flexDirection': 'column',
+                        #'minHeight': '90px',
+                        'marginBottom': '0.5rem',
+                    }
+                ),
+                # Actions section moved directly under dropdown
+                dmc.Divider(mb='xs'),
+                dmc.Text("Actions", size="sm", style={'color': '#888', 'marginBottom': '0.2rem', 'marginTop': '0.2rem', 'fontWeight': 500}),
+                UIComponents.create_control_buttons(),
+                dmc.Space(h=2),
+                # ...rest of sidebar content if any...
+            ], gap='sm', style={
+                'flexGrow': 1,
+                'display': 'flex',
+                'flexDirection': 'column',
+                'height': '100%'
+            }),
+        ], shadow='md', p='md', radius='md', style={
+            'background': 'linear-gradient(135deg, #f8fafc 80%, #e3f2fd 100%)',
+            'border': '1px solid #e3e8ee',
+            'minWidth': '270px',
+            'maxWidth': '340px',
+            'margin': '0 auto',
+            'boxShadow': '0 2px 12px rgba(30, 64, 175, 0.07)',
+            'height': 'calc(100vh - 48px)',  # 48px for header/footer or as needed
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'flex-start',
+            'paddingBottom': '1.5rem',  # leave some space at the bottom
+        })
     
     @staticmethod
     def create_footer():
