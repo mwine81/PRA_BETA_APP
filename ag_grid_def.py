@@ -42,11 +42,7 @@ columnDefs = [
                 'field': 'beds',
                 'columnGroupShow': 'open',
             },
-            {
-                'headerName': '340B',
-                'field': 'is_340b',
-                'columnGroupShow': 'open',
-            },
+            
             {
                 'headerName': 'Hospital Latitude',
                 'field': 'lat',
@@ -61,6 +57,11 @@ columnDefs = [
             },
             
         ]
+    },
+    {
+        'headerName': '340B',
+        'field': 'is_340b',
+        'columnGroupShow': 'open',
     },
     {
         'headerName': 'Description',

@@ -156,7 +156,7 @@ def update_data_and_prices(selected_value, is_hcpcs):
         filtered_data = (
             filter_payment_info(selection_type, selected_value)
             .pipe(add_hospital_data)
-            .collect()
+            .collect(engine='streaming')
             .to_dicts()
         )
         

@@ -141,6 +141,12 @@ def create_price_distribution_plot(df):
     Returns:
         plotly.graph_objects.Figure
     """
+    # function to to create x label with hospital count
+    def unique_hospital_count() -> pl.Expr:
+        return c.name.n_unique().over('drug_type_of_measurement').alias('hospital_count')
+
+    def drug_type_of_measurement_with_hospital_ct() -> pl.Expr:
+        return pl.format('{}\n({})', c.drug_type_of_measurement, unique_hospital_count()).alias('drug_type_of_measurement')
 
     df = (
         df
@@ -151,6 +157,7 @@ def create_price_distribution_plot(df):
         .agg(
             ((c.standard_charge_negotiated_dollar.mean() / c.drug_unit_of_measurement.mean())).round(2).alias('price_per_unit')
         )
+        .with_columns(drug_type_of_measurement_with_hospital_ct())
     )
 
 
@@ -210,17 +217,18 @@ def create_price_distribution_plot(df):
         showlegend=False,
         autosize=True,
         height=500,
-        margin=dict(l=60, r=40, t=100, b=120),  # Increased bottom margin
-        plot_bgcolor='white',
-        annotations=[
-            dict(
-                text="Note: Log scale used for price axis. Box shows 25-75th percentile, whiskers show 1.5x IQR.",
-                showarrow=False,
-                xref="paper",
-                yref="paper",
-                x=0,
-                y=-0.25,  # Moved note further down
-                font=dict(size=12, color="#666"),
+        # Increased bottom margin
+                    plot_bgcolor='white',
+                    annotations=[
+                            dict(
+                                    text=      "1. The y-axis uses a logarithmic scale. Each box represents the interquartile range (25th–75th percentile); whiskers extend to 1.5× IQR.<br>"
+                                                "2. The number in parentheses after each unit on the x-axis indicates the count of hospitals reporting prices in that unit.",
+                                    showarrow=False,
+                                    xref="paper",
+                                    yref="paper",
+                                    x=0,
+                                    y=-0.26,  # Moved note further down
+                font=dict(size=10, color="#666"),
                 align="left"
             )
         ]
