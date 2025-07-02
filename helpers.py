@@ -318,7 +318,7 @@ def create_map_visualization(data: pl.LazyFrame):
     fig.update_layout(
         title=dict(
             text='Hospital Price Distribution Across USA<br><span style="font-size:12px;">Circle size and color indicate average negotiated price</span>',
-            x=0.01,
+            x=0.5,
             font=dict(size=18, color='#2c3e50')
         ),
         paper_bgcolor='white',

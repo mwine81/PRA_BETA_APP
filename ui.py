@@ -70,50 +70,85 @@ class UIComponents:
     @staticmethod
     def create_visualizations():
         """Create the graphs grid"""
+        expand_icon = DashIconify(icon="mdi:fullscreen", width=22, height=22, style={"verticalAlign": "middle"})
         return dmc.Grid([
             dmc.GridCol(
                 dmc.Card([
                     dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Hospital Map", fw=500, size="sm"),
+                        dmc.Box([
                             dmc.Button(
-                                leftSection=DashIconify(icon="mdi:fullscreen", width=14),
-                                children="Expand", 
-                                id="expand-map-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='blue'
+                                expand_icon,
+                                id="expand-map-btn",
+                                n_clicks=0,
+                                variant='subtle',
+                                size='lg',
+                                className='expand-fab',
+                                style={
+                                    'position': 'absolute',
+                                    'top': '12px',
+                                    'left': '12px',  # Move to left
+                                    'zIndex': 2,
+                                    'borderRadius': '50%',
+                                    'padding': '0.35rem',
+                                    'minWidth': '44px',
+                                    'minHeight': '44px',
+                                    'width': '44px',
+                                    'height': '44px',
+                                    'display': 'flex',
+                                    'alignItems': 'center',
+                                    'justifyContent': 'center',
+                                    'boxShadow': '0 2px 8px rgba(0,0,0,0.10)',
+                                    'background': 'rgba(255,255,255,0.95)',
+                                    'border': '1px solid #e3e8ee',
+                                    'transition': 'box-shadow 0.2s, background 0.2s',
+                                }
                             ),
-                        ], justify="right", align="center"),
+                        ], style={'position': 'relative', 'width': '100%', 'height': '0'}),
                         dcc.Loading(
                             dcc.Graph(id='map'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], gap=0, style={'position': 'relative'}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
             dmc.GridCol(
                 dmc.Card([
                     dmc.Stack([
-                        dmc.Group([
-                            #dmc.Text("Price Distribution", fw=500, size="sm"),
+                        dmc.Box([
                             dmc.Button(
-                                leftSection=DashIconify(icon="mdi:chart-box-outline", width=14),
-                                children="Expand", 
-                                id="expand-distribution-btn", 
-                                n_clicks=0, 
-                                variant='light', 
-                                size='xs',
-                                color='green'
+                                expand_icon,
+                                id="expand-distribution-btn",
+                                n_clicks=0,
+                                variant='subtle',
+                                size='lg',
+                                className='expand-fab',
+                                style={
+                                    'position': 'absolute',
+                                    'top': '12px',
+                                    'left': '12px',  # Move to left
+                                    'zIndex': 2,
+                                    'borderRadius': '50%',
+                                    'padding': '0.35rem',
+                                    'minWidth': '44px',
+                                    'minHeight': '44px',
+                                    'width': '44px',
+                                    'height': '44px',
+                                    'display': 'flex',
+                                    'alignItems': 'center',
+                                    'justifyContent': 'center',
+                                    'boxShadow': '0 2px 8px rgba(0,0,0,0.10)',
+                                    'background': 'rgba(255,255,255,0.95)',
+                                    'border': '1px solid #e3e8ee',
+                                    'transition': 'box-shadow 0.2s, background 0.2s',
+                                }
                             ),
-                        ], justify="right", align="center"),
+                        ], style={'position': 'relative', 'width': '100%', 'height': '0'}),
                         dcc.Loading(
                             dcc.Graph(id='price-distribution'),
                             type="circle"
                         ),
-                    ], gap=0),
+                    ], gap=0, style={'position': 'relative'}),
                 ], shadow='sm', p="sm"),
                 span={'base': 12, 'xl': 6} # type: ignore
             ),
@@ -123,7 +158,7 @@ class UIComponents:
     def create_charts_section():
         """Create the charts section with professional header"""
         return dmc.Card([
-            dmc.Text("Chart Analysis", className='section-title'),
+            dmc.Text("Chart Analysis", className='section-title', style={'textAlign': 'center'}),
             UIComponents.create_visualizations(),
         ], shadow='sm')
     
