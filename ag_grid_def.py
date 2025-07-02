@@ -176,6 +176,10 @@ columnDefs = [
         'field': 'hospital_unique_id',
         'hide': True,
     },
+        {
+        'headerName': 'As Of Date',
+        'field': 'retrieved',
+        'hide': False,
+    },
     
-
 ]

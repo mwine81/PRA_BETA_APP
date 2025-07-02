@@ -22,6 +22,9 @@ def load_parquet(path: Path) -> pl.LazyFrame:
     """
     return pl.scan_parquet(path)
 
+def to_date_format():
+    return cs.contains("retrieved").str.to_date("%Y-%m-%dT%H:%M:%S%.3fZ")
+
 payment_info = (
     load_parquet(PAYMENT_INFO)
     .with_columns(pl.when(c.drug_unit_of_measurement.is_null() | (c.drug_unit_of_measurement == 0))
@@ -32,7 +35,11 @@ payment_info = (
 ndc_data = load_parquet(NDC_NAMES)
 # J8499 is blacket non chemo drug - remove from selection option
 hcpcs_data = load_parquet(HCPCS_DESC).filter(~c.hcpcs.is_in(['J8499']))
-hospitals_data = load_parquet(HOSPITALS).with_columns(pl.col(['lat','long']).cast(pl.Float64))
+hospitals_data = load_parquet(HOSPITALS).with_columns(
+    pl.col(['lat','long']).cast(pl.Float64),
+    to_date_format()
+)
+
 hospital340B = load_parquet(HOSPITAL340B)
 
 # function to add 340b flag to lazyframe on hospital unique_id
@@ -125,7 +132,7 @@ def filter_payment_info(how: str, value: str, data: pl.LazyFrame = payment_info)
 # add hospital data to grid
 def add_hospital_data(data: pl.LazyFrame) -> pl.LazyFrame:
     data = data.join(
-        hospitals_data.select(c.unique_id, c.name, c.state, c.beds, c.is_340b, c.lat, c.long),
+        hospitals_data.select(c.unique_id, c.name, c.state, c.beds, c.is_340b, c.lat, c.long, c.retrieved),
         left_on='hospital_unique_id',
         right_on='unique_id'
     )

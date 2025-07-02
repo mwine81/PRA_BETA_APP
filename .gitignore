@@ -10,3 +10,6 @@ wheels/
 .venv
 uv.lock
 pyproject.toml
+
+# files
+scratch.py
